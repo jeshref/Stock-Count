@@ -23,8 +23,8 @@ button,input,select{font:inherit}.smallbtn{border:0;background:#e5e7eb;padding:9
 input[type=text]{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:10px;margin:8px 0 12px}
 .actions{display:flex;gap:8px}.actions button{flex:1}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}
 .item-edit{padding:12px 0;border-bottom:1px solid #e5e7eb}.item-edit:last-child{border-bottom:0}.checks{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.notice{background:#eef2ff;padding:11px 13px;border-radius:12px;color:#3730a3;font-size:14px;margin-bottom:12px}.saved-input{width:72px;padding:7px;border:1px solid #d1d5db;border-radius:8px}
-</style>
+.notice{background:#eef2ff;padding:11px 13px;border-radius:12px;color:#3730a3;font-size:14px;margin-bottom:12px}
+.saved-input{width:60px;padding:6px;border:1px solid #d1d5db;border-radius:7px}</style>
 </head>
 <body>
 <div class="app">
@@ -33,7 +33,7 @@ input[type=text]{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:
 <section id="home">
 <div class="card"><h2>Select Area</h2><div class="area-grid" id="areaGrid"></div><button class="add-area" onclick="addArea()">＋ Add Area</button></div>
 <div class="card"><div class="topbar"><h2 style="margin:0">Current Count</h2><button class="smallbtn" onclick="showSummary()">View All</button></div>
-<p class="sub">Your count saves automatically as you go.</p><button class="smallbtn" onclick="openEditor()">Manage Stock Lists</button></div>
+<p class="sub">Your count saves automatically as you go.</p><button class="next secondary" onclick="openEditor()">Manage Stock Lists</button></div>
 <div class="card"><h2>Saved Counts</h2><div id="savedCountsList"></div></div>
 </section>
 
@@ -58,14 +58,14 @@ input[type=text]{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:
 </div></section>
 
 <section id="editor" class="hidden"><div class="card">
-<div class="topbar"><h2>Edit Stock Lists</h2><button class="smallbtn" onclick="showHome()">Done</button></div>
+<div class="topbar"><h2>Manage Stock Lists</h2><button class="smallbtn" onclick="showHome()">Done</button></div>
 <p class="sub">Add, remove, rename items or change whether each item uses Cases, Trays or Loose.</p>
 <div id="editorBody"></div></div></section>
 </div>
 
 <script>
 const DEFAULT_AREAS=["Store Room", "Walk-in Chiller", "Drinks Fridge", "Freezer"];
-const DEFAULT_ITEMS={"Store Room": [["Piccante Peppers", "Cases", 1, 1], ["Pineapple", "Cases", 1, 1], ["Sweetcorn", "Cases", 1, 1], ["Jalapeños", "Cases", 1, 1], ["Olives", "Loose", 0, 1], ["Tortillas", "Loose", 0, 1], ["Cornmeal", "Loose", 0, 1], ["Herbs", "Cases", 1, 1], ["Cinnamon Sugar", "Cases", 1, 1], ["Biscoff Crumb", "Cases", 1, 1], ["Whirly Butter", "Cases", 1, 1], ["Gluten Free Bases", "Cases", 1, 1], ["Milk Chocolate Discs", "Cases", 1, 1], ["White Chocolate Discs", "Cases", 1, 1], ["Cheese Sauce", "Loose", 0, 1], ["Pesto Drizzle", "Loose", 0, 1], ["Burger Sauce", "Cases", 1, 1], ["Hot Honey", "Cases", 1, 1], ["Tomato Sauce", "Cases", 1, 1], ["BBQ Sauce", "Cases", 1, 1], ["Tomato and Garlic Sauce", "Cases", 1, 1], ["Frank's Hot Sauce", "Cases", 1, 1], ["Regular Coke 1.5L", "Cases", 1, 1], ["Coke Zero 1.5L", "Cases", 1, 1], ["Diet Coke 1.5L", "Cases", 1, 1], ["Fanta 1.5L", "Cases", 1, 1], ["Regular Coke 500ml", "Cases", 1, 1], ["Coke Zero 500ml", "Cases", 1, 1], ["Diet Coke 500ml", "Cases", 1, 1], ["Cherry Coke 500ml", "Cases", 1, 1], ["Fanta 500ml", "Cases", 1, 1], ["Sprite 500ml", "Cases", 1, 1], ["Monster Energy 500ml", "Cases", 1, 1], ["Smart Water 600ml", "Cases", 1, 1], ["Gherkins", "Cases", 1, 1]], "Walk-in Chiller": [["Pepperoni", "Cases", 1, 1], ["Cheese", "Cases", 1, 1], ["Delight Cheese", "Cases", 1, 1], ["13\" Dough", "Trays", 1, 1], ["11\" Dough", "Trays", 1, 1], ["9\" Dough", "Trays", 1, 1], ["6\" Dough", "Trays", 1, 1], ["13\" Thin Crust", "Cases", 1, 1], ["11\" Thin Crust", "Cases", 1, 1], ["7\" Thin Crust", "Cases", 1, 1], ["Wraps", "Cases", 1, 1], ["Nduja", "Loose", 0, 1], ["Sausage", "Loose", 0, 1], ["Chinese Chicken", "Loose", 0, 1], ["Ham", "Loose", 0, 1], ["Bacon", "Loose", 0, 1], ["Tandoori Chicken", "Loose", 0, 1], ["Meatballs", "Loose", 0, 1], ["Chicken", "Loose", 0, 1], ["Beef", "Loose", 0, 1], ["Coleslaw", "Cases", 1, 1], ["String Cheese", "Cases", 1, 1], ["Goat's Cheese", "Cases", 1, 1], ["Liquid Cheese", "Cases", 1, 1], ["Garlic Butter", "Cases", 1, 1], ["Cookies", "Cases", 1, 1], ["Caramel Cookies", "Cases", 1, 1], ["Sweetcorn", "Loose", 0, 1], ["Pineapple", "Loose", 0, 1], ["Jalapeños", "Loose", 0, 1], ["Gherkins", "Loose", 0, 1], ["Piccante Peppers", "Loose", 0, 1], ["Onions", "Loose", 0, 1], ["Green and Red Peppers", "Loose", 0, 1], ["Mushrooms", "Loose", 0, 1], ["Tomato", "Loose", 0, 1], ["Fries", "Cases", 1, 1], ["Wedges", "Cases", 1, 1], ["Wings", "Cases", 1, 1], ["Strippers", "Cases", 1, 1]], "Drinks Fridge": [["Regular Coke 1.5L", "Loose", 0, 1], ["Regular Coke 500ml", "Loose", 0, 1], ["Diet Coke 1.5L", "Loose", 0, 1], ["Diet Coke 500ml", "Loose", 0, 1], ["Coke Zero 1.5L", "Loose", 0, 1], ["Coke Zero 500ml", "Loose", 0, 1], ["Fanta 1.5L", "Loose", 0, 1], ["Fanta 500ml", "Loose", 0, 1], ["Cherry Coke 500ml", "Loose", 0, 1], ["Sprite 500ml", "Loose", 0, 1], ["Monster 500ml", "Loose", 0, 1], ["Smart Water 600ml", "Loose", 0, 1]], "Freezer": [["Cookie Dough", "Loose", 0, 1], ["Ben & Jerry's Chocolate Fudge Brownie", "Loose", 0, 1], ["Ben & Jerry's Strawberry Cheesecake", "Loose", 0, 1], ["Ben & Jerry's Caramel Chew Chew", "Loose", 0, 1], ["Ben & Jerry's Phish Food", "Loose", 0, 1], ["Magnum Salted Caramel", "Loose", 0, 1]]};
+const DEFAULT_ITEMS={"Store Room": [["Piccante Peppers", "Cases", 1, 1], ["Pineapple", "Cases", 1, 1], ["Sweetcorn", "Cases", 1, 1], ["Gherkins", "Cases", 1, 1], ["Jalapeños", "Cases", 1, 1], ["Olives", "Loose", 0, 1], ["Tortillas", "Loose", 0, 1], ["Cornmeal", "Loose", 0, 1], ["Herbs", "Cases", 1, 1], ["Cinnamon Sugar", "Cases", 1, 1], ["Biscoff Crumb", "Cases", 1, 1], ["Whirly Butter", "Cases", 1, 1], ["Gluten Free Bases", "Cases", 1, 1], ["Milk Chocolate Discs", "Cases", 1, 1], ["White Chocolate Discs", "Cases", 1, 1], ["Cheese Sauce", "Loose", 0, 1], ["Pesto Drizzle", "Loose", 0, 1], ["Burger Sauce", "Cases", 1, 1], ["Hot Honey", "Cases", 1, 1], ["Tomato Sauce", "Cases", 1, 1], ["BBQ Sauce", "Cases", 1, 1], ["Tomato and Garlic Sauce", "Cases", 1, 1], ["Frank's Hot Sauce", "Cases", 1, 1], ["Regular Coke 1.5L", "Cases", 1, 1], ["Coke Zero 1.5L", "Cases", 1, 1], ["Diet Coke 1.5L", "Cases", 1, 1], ["Fanta 1.5L", "Cases", 1, 1], ["Regular Coke 500ml", "Cases", 1, 1], ["Coke Zero 500ml", "Cases", 1, 1], ["Diet Coke 500ml", "Cases", 1, 1], ["Cherry Coke 500ml", "Cases", 1, 1], ["Fanta 500ml", "Cases", 1, 1], ["Sprite 500ml", "Cases", 1, 1], ["Monster Energy 500ml", "Cases", 1, 1], ["Smart Water 600ml", "Cases", 1, 1]], "Walk-in Chiller": [["Pepperoni", "Cases", 1, 1], ["Cheese", "Cases", 1, 1], ["Delight Cheese", "Cases", 1, 1], ["13\" Dough", "Trays", 1, 1], ["11\" Dough", "Trays", 1, 1], ["9\" Dough", "Trays", 1, 1], ["6\" Dough", "Trays", 1, 1], ["13\" Thin Crust", "Cases", 1, 1], ["11\" Thin Crust", "Cases", 1, 1], ["7\" Thin Crust", "Cases", 1, 1], ["Wraps", "Cases", 1, 1], ["Nduja", "Loose", 0, 1], ["Sausage", "Loose", 0, 1], ["Chinese Chicken", "Loose", 0, 1], ["Ham", "Loose", 0, 1], ["Bacon", "Loose", 0, 1], ["Tandoori Chicken", "Loose", 0, 1], ["Meatballs", "Loose", 0, 1], ["Chicken", "Loose", 0, 1], ["Beef", "Loose", 0, 1], ["Coleslaw", "Cases", 1, 1], ["String Cheese", "Cases", 1, 1], ["Goat's Cheese", "Cases", 1, 1], ["Liquid Cheese", "Cases", 1, 1], ["Garlic Butter", "Cases", 1, 1], ["Cookies", "Cases", 1, 1], ["Caramel Cookies", "Cases", 1, 1], ["Sweetcorn", "Loose", 0, 1], ["Pineapple", "Loose", 0, 1], ["Jalapeños", "Loose", 0, 1], ["Gherkins", "Loose", 0, 1], ["Piccante Peppers", "Loose", 0, 1], ["Onions", "Loose", 0, 1], ["Green and Red Peppers", "Loose", 0, 1], ["Mushrooms", "Loose", 0, 1], ["Tomato", "Loose", 0, 1], ["Fries", "Cases", 1, 1], ["Wedges", "Cases", 1, 1], ["Wings", "Cases", 1, 1], ["Strippers", "Cases", 1, 1]], "Drinks Fridge": [["Regular Coke 1.5L", "Loose", 0, 1], ["Regular Coke 500ml", "Loose", 0, 1], ["Diet Coke 1.5L", "Loose", 0, 1], ["Diet Coke 500ml", "Loose", 0, 1], ["Coke Zero 1.5L", "Loose", 0, 1], ["Coke Zero 500ml", "Loose", 0, 1], ["Fanta 1.5L", "Loose", 0, 1], ["Fanta 500ml", "Loose", 0, 1], ["Cherry Coke 500ml", "Loose", 0, 1], ["Sprite 500ml", "Loose", 0, 1], ["Monster 500ml", "Loose", 0, 1], ["Smart Water 600ml", "Loose", 0, 1]], "Freezer": [["Cookie Dough", "Loose", 0, 1], ["Ben & Jerry's Chocolate Fudge Brownie", "Loose", 0, 1], ["Ben & Jerry's Strawberry Cheesecake", "Loose", 0, 1], ["Ben & Jerry's Caramel Chew Chew", "Loose", 0, 1], ["Ben & Jerry's Phish Food", "Loose", 0, 1], ["Magnum Salted Caramel", "Loose", 0, 1]]};
 
 function read(k,f){try{let x=JSON.parse(localStorage.getItem(k));return x??f}catch(e){return f}}
 let areas=read("sc_areas",null);
@@ -74,16 +74,20 @@ let counts=read("sc_counts",{});
 let savedCounts=read("sc_saved_counts",[]);
 if(!Array.isArray(areas)||!areas.length)areas=DEFAULT_AREAS.slice();
 if(!items||typeof items!=="object")items=JSON.parse(JSON.stringify(DEFAULT_ITEMS));
-
-/* Merge the new stock list into an existing app without deleting existing items/counts. */
-DEFAULT_AREAS.forEach(a=>{
- if(!areas.includes(a))areas.push(a);
- if(!Array.isArray(items[a]))items[a]=[];
- const existing=new Set(items[a].map(x=>x[0]));
- DEFAULT_ITEMS[a].forEach(it=>{if(!existing.has(it[0]))items[a].push(JSON.parse(JSON.stringify(it)))});
-});
 if(!Array.isArray(savedCounts))savedCounts=[];
 
+const LIST_VERSION="user-stock-list-v1";
+if(localStorage.getItem("sc_list_version")!==LIST_VERSION){
+  const old=counts||{}, cleaned={};
+  Object.keys(DEFAULT_ITEMS).forEach(a=>{
+    cleaned[a]={};
+    DEFAULT_ITEMS[a].forEach(it=>{const c=old[a]?.[it[0]];if(c)cleaned[a][it[0]]=c;});
+  });
+  areas=Object.keys(DEFAULT_ITEMS);
+  items=JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+  counts=cleaned;
+  localStorage.setItem("sc_list_version",LIST_VERSION);
+}
 let currentArea="",currentIndex=0,activeType="",working={};
 
 function save(){localStorage.setItem("sc_areas",JSON.stringify(areas));localStorage.setItem("sc_items",JSON.stringify(items));localStorage.setItem("sc_counts",JSON.stringify(counts));localStorage.setItem("sc_saved_counts",JSON.stringify(savedCounts))}
@@ -91,7 +95,7 @@ function show(id){["home","counter","summary","savedView","editor"].forEach(x=>d
 function showHome(){show("home");renderAreas();renderSaved()}
 function renderAreas(){let g=document.getElementById("areaGrid");g.innerHTML="";areas.forEach(a=>{let b=document.createElement("button");b.className="area-btn";b.textContent=a;b.onclick=()=>startArea(a);g.appendChild(b)})}
 function addArea(){let n=prompt("Enter the name of the new area:");if(n===null)return;n=n.trim();if(!n){alert("Please enter an area name.");return}if(areas.some(a=>a.toLowerCase()===n.toLowerCase())){alert("That area already exists.");return}areas.push(n);items[n]=[];save();renderAreas();alert(n+" has been added.")}
-function startArea(a){currentArea=a;currentIndex=0;if(!items[a]?.length){alert("This area has no items yet. Use Edit Stock Lists to add some.");return}loadItem()}
+function startArea(a){currentArea=a;currentIndex=0;if(!items[a]?.length){alert("This area has no items yet. Use Manage Stock Lists to add some.");return}loadItem()}
 function loadItem(){
 let it=items[currentArea][currentIndex];if(!it){showSummary();return}
 document.getElementById("progress").textContent=currentArea+" • Item "+(currentIndex+1)+" of "+items[currentArea].length;
@@ -128,42 +132,43 @@ let d=document.createElement("div");d.className="summary-row";
 d.innerHTML='<span>'+esc(s.date)+'</span><span style="display:flex;gap:5px"><button class="smallbtn" onclick="viewSaved('+i+')">View</button><button class="smallbtn" onclick="editSaved('+i+')">Edit</button><button class="smallbtn" onclick="deleteSaved('+i+')">Delete</button></span>';
 b.appendChild(d)
 })}
+function viewSaved(i){
+let s=savedCounts[i];
+document.getElementById("savedTitle").textContent="Saved Count • "+s.date;
+buildRows(s.areas,s.items,s.counts,document.getElementById("savedList"));
+show("savedView")
+}
 function editSaved(i){
- const s=savedCounts[i];
- const box=document.getElementById("savedList");
- document.getElementById("savedTitle").textContent="Edit Saved Count • "+s.date;
- box.innerHTML="";
- s.areas.forEach(a=>{
-   let rows=[];
-   (s.items[a]||[]).forEach(it=>{
-     let c=s.counts[a]?.[it[0]]; if(!c)return;
-     let firstLabel=it[1]||"Cases";
-     rows.push('<div class="summary-row"><span>'+esc(it[0])+'</span><span style="display:flex;gap:5px">'+
-       (it[2]?'<input class="saved-input" type="number" min="0" max="9999" value="'+(c.first??0)+'" data-a="'+escAttr(a)+'" data-item="'+escAttr(it[0])+'" data-type="first">':'')+
-       (it[3]?'<input class="saved-input" type="number" min="0" max="9999" value="'+(c.loose??0)+'" data-a="'+escAttr(a)+'" data-item="'+escAttr(it[0])+'" data-type="loose">':'')+
-       '</span></div>');
-   });
-   if(rows.length)box.innerHTML+='<div class="summary-area">'+esc(a)+"</div>"+rows.join("");
- });
- box.innerHTML+='<button class="next" onclick="saveEditedSaved('+i+')">Save Changes</button>';
- show("savedView");
+let s=savedCounts[i],box=document.getElementById("savedList");
+document.getElementById("savedTitle").textContent="Edit Saved Count • "+s.date;
+box.innerHTML="";
+s.areas.forEach(a=>{
+let rows=[];
+(s.items[a]||[]).forEach(it=>{
+let c=s.counts[a]?.[it[0]];if(!c)return;
+let controls='';
+if(it[2])controls+='<label><small>'+esc(it[1]||"Cases")+'</small> <input class="saved-input" type="number" min="0" max="9999" value="'+(c.first??0)+'" data-a="'+escAttr(a)+'" data-item="'+escAttr(it[0])+'" data-type="first"></label>';
+if(it[3])controls+='<label><small>Loose</small> <input class="saved-input" type="number" min="0" max="9999" value="'+(c.loose??0)+'" data-a="'+escAttr(a)+'" data-item="'+escAttr(it[0])+'" data-type="loose"></label>';
+rows.push('<div class="summary-row"><span>'+esc(it[0])+'</span><span style="display:flex;gap:6px">'+controls+'</span></div>');
+});
+if(rows.length)box.innerHTML+='<div class="summary-area">'+esc(a)+"</div>"+rows.join("");
+});
+box.innerHTML+='<button class="next" onclick="saveEditedSaved('+i+')">Save Changes</button>';
+show("savedView")
 }
 function saveEditedSaved(i){
- const s=savedCounts[i];
- document.querySelectorAll("#savedList .saved-input").forEach(inp=>{
-   const a=inp.dataset.a,item=inp.dataset.item,type=inp.dataset.type;
-   if(!s.counts[a])s.counts[a]={};
-   if(!s.counts[a][item])s.counts[a][item]={};
-   const n=Math.max(0,Math.min(9999,Number(inp.value)||0));
-   s.counts[a][item][type]=n;
- });
- savedCounts[i]=s;save();viewSaved(i);
+let s=savedCounts[i];
+document.querySelectorAll("#savedList .saved-input").forEach(inp=>{
+let a=inp.dataset.a,item=inp.dataset.item,type=inp.dataset.type;
+if(!s.counts[a])s.counts[a]={};if(!s.counts[a][item])s.counts[a][item]={};
+s.counts[a][item][type]=Math.max(0,Math.min(9999,Number(inp.value)||0));
+});
+savedCounts[i]=s;save();viewSaved(i)
 }
 function deleteSaved(i){
- if(!confirm("Delete this saved count? This cannot be undone."))return;
- savedCounts.splice(i,1);save();showHome();
+if(!confirm("Delete this saved count? This cannot be undone."))return;
+savedCounts.splice(i,1);save();showHome()
 }
-function viewSaved(i){let s=savedCounts[i];document.getElementById("savedTitle").textContent="Saved Count • "+s.date;buildRows(s.areas,s.items,s.counts,document.getElementById("savedList"));show("savedView")}
 function openEditor(){renderEditor();show("editor")}
 function renderEditor(){
 let b=document.getElementById("editorBody");b.innerHTML="";
@@ -181,12 +186,6 @@ let add=document.createElement("button");add.className="smallbtn";add.textConten
 }
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
 function escAttr(s){return esc(s).replace(/"/g,"&quot;")}
-if(Array.isArray(items["Store Room"])){
- const sr=items["Store Room"];
- const gi=sr.findIndex(x=>x[0]==="Gherkins");
- const ji=sr.findIndex(x=>x[0]==="Jalapeños");
- if(gi>=0&&ji>=0&&gi>ji){const g=sr.splice(gi,1)[0];const j=sr.findIndex(x=>x[0]==="Jalapeños");sr.splice(j,0,g);}
-}
 save();renderAreas();renderSaved();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
 </script>
 </body></html>
