@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Stock Count</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f3f4f6;color:#111827}
+.app{max-width:760px;margin:auto;min-height:100vh;padding:16px 16px 30px}header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+h1{font-size:28px;margin:0}.sub{color:#6b7280;font-size:14px;margin-top:3px}.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 2px 10px #0001;margin-bottom:14px}
+h2{margin:0 0 12px;font-size:20px}.hidden{display:none!important}.topbar{display:flex;justify-content:space-between;align-items:center;gap:8px}
+button,input,select{font:inherit}.smallbtn{border:0;background:#e5e7eb;padding:9px 12px;border-radius:10px;font-weight:700}
+.area-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.area-btn,.add-area{padding:17px 12px;border:1px solid #d1d5db;border-radius:14px;background:#fff;font-weight:700}
+.add-area{border-style:dashed;color:#374151;width:100%;margin-top:10px}.item-meta{color:#6b7280;font-size:14px;margin-bottom:5px}
+.item-name{font-size:27px;font-weight:800;margin-bottom:18px}.field{border:3px solid #e5e7eb;border-radius:16px;padding:14px 16px;margin:10px 0;background:#f9fafb}
+.field.active{border-color:#111827;background:#fff}.field-label{font-size:13px;font-weight:800;text-transform:uppercase;color:#6b7280}
+.field-value{font-size:40px;font-weight:800;line-height:1.05;margin-top:4px}.next{width:100%;margin-top:12px;padding:17px;border:0;border-radius:14px;background:#111827;color:#fff;font-size:18px;font-weight:800}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.key{height:62px;border:0;border-radius:14px;background:#e5e7eb;font-size:23px;font-weight:800}.key.action{font-size:16px}
+.summary-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #e5e7eb}
+.summary-row:last-child{border-bottom:0}.summary-area{font-size:17px;font-weight:800;margin-top:18px}.empty{color:#6b7280;text-align:center;padding:20px}
+input[type=text]{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:10px;margin:8px 0 12px}
+.actions{display:flex;gap:8px}.actions button{flex:1}.secondary{background:#e5e7eb;color:#111827}.danger{background:#fee2e2;color:#991b1b}
+.item-edit{padding:12px 0;border-bottom:1px solid #e5e7eb}.item-edit:last-child{border-bottom:0}.checks{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.notice{background:#eef2ff;padding:11px 13px;border-radius:12px;color:#3730a3;font-size:14px;margin-bottom:12px}.saved-input{width:72px;padding:7px;border:1px solid #d1d5db;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div><h1>Stock Count</h1><div class="sub">Offline stock counting</div></div><button class="smallbtn" onclick="showHome()">Areas</button></header>
+
+<section id="home">
+<div class="card"><h2>Select Area</h2><div class="area-grid" id="areaGrid"></div><button class="add-area" onclick="addArea()">＋ Add Area</button></div>
+<div class="card"><div class="topbar"><h2 style="margin:0">Current Count</h2><button class="smallbtn" onclick="showSummary()">View All</button></div>
+<p class="sub">Your count saves automatically as you go.</p><button class="smallbtn" onclick="openEditor()">Manage Stock Lists</button></div>
+<div class="card"><h2>Saved Counts</h2><div id="savedCountsList"></div></div>
+</section>
+
+<section id="counter" class="hidden"><div class="card">
+<div class="topbar"><div class="item-meta" id="progress"></div><button class="smallbtn" onclick="showHome()">Areas</button></div>
+<div class="item-name" id="itemName"></div><div id="fields"></div>
+<button class="next" onclick="submitValue()">Submit & Next</button>
+<div class="keypad">
+<button class="key" onclick="key('1')">1</button><button class="key" onclick="key('2')">2</button><button class="key" onclick="key('3')">3</button>
+<button class="key" onclick="key('4')">4</button><button class="key" onclick="key('5')">5</button><button class="key" onclick="key('6')">6</button>
+<button class="key" onclick="key('7')">7</button><button class="key" onclick="key('8')">8</button><button class="key" onclick="key('9')">9</button>
+<button class="key action" onclick="clearValue()">Clear</button><button class="key" onclick="key('0')">0</button><button class="key action" onclick="backspace()">⌫</button>
+</div></div></section>
+
+<section id="summary" class="hidden"><div class="card">
+<div class="topbar"><h2>Complete Count</h2><button class="smallbtn" onclick="showHome()">Areas</button></div>
+<div id="summaryList"></div><button class="next secondary" onclick="saveAndStartNew()">Save Count & Start New</button>
+</div></section>
+
+<section id="savedView" class="hidden"><div class="card">
+<div class="topbar"><h2 id="savedTitle">Saved Count</h2><button class="smallbtn" onclick="showHome()">Back</button></div><div id="savedList"></div>
+</div></section>
+
+<section id="editor" class="hidden"><div class="card">
+<div class="topbar"><h2>Edit Stock Lists</h2><button class="smallbtn" onclick="showHome()">Done</button></div>
+<p class="sub">Add, remove, rename items or change whether each item uses Cases, Trays or Loose.</p>
+<div id="editorBody"></div></div></section>
+</div>
+
+<script>
+const DEFAULT_AREAS=["Store Room", "Walk-in Chiller", "Drinks Fridge", "Freezer"];
+const DEFAULT_ITEMS={"Store Room": [["Piccante Peppers", "Cases", 1, 1], ["Pineapple", "Cases", 1, 1], ["Sweetcorn", "Cases", 1, 1], ["Jalapeños", "Cases", 1, 1], ["Olives", "Loose", 0, 1], ["Tortillas", "Loose", 0, 1], ["Cornmeal", "Loose", 0, 1], ["Herbs", "Cases", 1, 1], ["Cinnamon Sugar", "Cases", 1, 1], ["Biscoff Crumb", "Cases", 1, 1], ["Whirly Butter", "Cases", 1, 1], ["Gluten Free Bases", "Cases", 1, 1], ["Milk Chocolate Discs", "Cases", 1, 1], ["White Chocolate Discs", "Cases", 1, 1], ["Cheese Sauce", "Loose", 0, 1], ["Pesto Drizzle", "Loose", 0, 1], ["Burger Sauce", "Cases", 1, 1], ["Hot Honey", "Cases", 1, 1], ["Tomato Sauce", "Cases", 1, 1], ["BBQ Sauce", "Cases", 1, 1], ["Tomato and Garlic Sauce", "Cases", 1, 1], ["Frank's Hot Sauce", "Cases", 1, 1], ["Regular Coke 1.5L", "Cases", 1, 1], ["Coke Zero 1.5L", "Cases", 1, 1], ["Diet Coke 1.5L", "Cases", 1, 1], ["Fanta 1.5L", "Cases", 1, 1], ["Regular Coke 500ml", "Cases", 1, 1], ["Coke Zero 500ml", "Cases", 1, 1], ["Diet Coke 500ml", "Cases", 1, 1], ["Cherry Coke 500ml", "Cases", 1, 1], ["Fanta 500ml", "Cases", 1, 1], ["Sprite 500ml", "Cases", 1, 1], ["Monster Energy 500ml", "Cases", 1, 1], ["Smart Water 600ml", "Cases", 1, 1], ["Gherkins", "Cases", 1, 1]], "Walk-in Chiller": [["Pepperoni", "Cases", 1, 1], ["Cheese", "Cases", 1, 1], ["Delight Cheese", "Cases", 1, 1], ["13\" Dough", "Trays", 1, 1], ["11\" Dough", "Trays", 1, 1], ["9\" Dough", "Trays", 1, 1], ["6\" Dough", "Trays", 1, 1], ["13\" Thin Crust", "Cases", 1, 1], ["11\" Thin Crust", "Cases", 1, 1], ["7\" Thin Crust", "Cases", 1, 1], ["Wraps", "Cases", 1, 1], ["Nduja", "Loose", 0, 1], ["Sausage", "Loose", 0, 1], ["Chinese Chicken", "Loose", 0, 1], ["Ham", "Loose", 0, 1], ["Bacon", "Loose", 0, 1], ["Tandoori Chicken", "Loose", 0, 1], ["Meatballs", "Loose", 0, 1], ["Chicken", "Loose", 0, 1], ["Beef", "Loose", 0, 1], ["Coleslaw", "Cases", 1, 1], ["String Cheese", "Cases", 1, 1], ["Goat's Cheese", "Cases", 1, 1], ["Liquid Cheese", "Cases", 1, 1], ["Garlic Butter", "Cases", 1, 1], ["Cookies", "Cases", 1, 1], ["Caramel Cookies", "Cases", 1, 1], ["Sweetcorn", "Loose", 0, 1], ["Pineapple", "Loose", 0, 1], ["Jalapeños", "Loose", 0, 1], ["Gherkins", "Loose", 0, 1], ["Piccante Peppers", "Loose", 0, 1], ["Onions", "Loose", 0, 1], ["Green and Red Peppers", "Loose", 0, 1], ["Mushrooms", "Loose", 0, 1], ["Tomato", "Loose", 0, 1], ["Fries", "Cases", 1, 1], ["Wedges", "Cases", 1, 1], ["Wings", "Cases", 1, 1], ["Strippers", "Cases", 1, 1]], "Drinks Fridge": [["Regular Coke 1.5L", "Loose", 0, 1], ["Regular Coke 500ml", "Loose", 0, 1], ["Diet Coke 1.5L", "Loose", 0, 1], ["Diet Coke 500ml", "Loose", 0, 1], ["Coke Zero 1.5L", "Loose", 0, 1], ["Coke Zero 500ml", "Loose", 0, 1], ["Fanta 1.5L", "Loose", 0, 1], ["Fanta 500ml", "Loose", 0, 1], ["Cherry Coke 500ml", "Loose", 0, 1], ["Sprite 500ml", "Loose", 0, 1], ["Monster 500ml", "Loose", 0, 1], ["Smart Water 600ml", "Loose", 0, 1]], "Freezer": [["Cookie Dough", "Loose", 0, 1], ["Ben & Jerry's Chocolate Fudge Brownie", "Loose", 0, 1], ["Ben & Jerry's Strawberry Cheesecake", "Loose", 0, 1], ["Ben & Jerry's Caramel Chew Chew", "Loose", 0, 1], ["Ben & Jerry's Phish Food", "Loose", 0, 1], ["Magnum Salted Caramel", "Loose", 0, 1]]};
+
+function read(k,f){try{let x=JSON.parse(localStorage.getItem(k));return x??f}catch(e){return f}}
+let areas=read("sc_areas",null);
+let items=read("sc_items",null);
+let counts=read("sc_counts",{});
+let savedCounts=read("sc_saved_counts",[]);
+if(!Array.isArray(areas)||!areas.length)areas=DEFAULT_AREAS.slice();
+if(!items||typeof items!=="object")items=JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+
+/* Merge the new stock list into an existing app without deleting existing items/counts. */
+DEFAULT_AREAS.forEach(a=>{
+ if(!areas.includes(a))areas.push(a);
+ if(!Array.isArray(items[a]))items[a]=[];
+ const existing=new Set(items[a].map(x=>x[0]));
+ DEFAULT_ITEMS[a].forEach(it=>{if(!existing.has(it[0]))items[a].push(JSON.parse(JSON.stringify(it)))});
+});
+if(!Array.isArray(savedCounts))savedCounts=[];
+
+let currentArea="",currentIndex=0,activeType="",working={};
+
+function save(){localStorage.setItem("sc_areas",JSON.stringify(areas));localStorage.setItem("sc_items",JSON.stringify(items));localStorage.setItem("sc_counts",JSON.stringify(counts));localStorage.setItem("sc_saved_counts",JSON.stringify(savedCounts))}
+function show(id){["home","counter","summary","savedView","editor"].forEach(x=>document.getElementById(x).classList.toggle("hidden",x!==id))}
+function showHome(){show("home");renderAreas();renderSaved()}
+function renderAreas(){let g=document.getElementById("areaGrid");g.innerHTML="";areas.forEach(a=>{let b=document.createElement("button");b.className="area-btn";b.textContent=a;b.onclick=()=>startArea(a);g.appendChild(b)})}
+function addArea(){let n=prompt("Enter the name of the new area:");if(n===null)return;n=n.trim();if(!n){alert("Please enter an area name.");return}if(areas.some(a=>a.toLowerCase()===n.toLowerCase())){alert("That area already exists.");return}areas.push(n);items[n]=[];save();renderAreas();alert(n+" has been added.")}
+function startArea(a){currentArea=a;currentIndex=0;if(!items[a]?.length){alert("This area has no items yet. Use Edit Stock Lists to add some.");return}loadItem()}
+function loadItem(){
+let it=items[currentArea][currentIndex];if(!it){showSummary();return}
+document.getElementById("progress").textContent=currentArea+" • Item "+(currentIndex+1)+" of "+items[currentArea].length;
+document.getElementById("itemName").textContent=it[0];
+working={first:counts[currentArea]?.[it[0]]?.first??0,loose:counts[currentArea]?.[it[0]]?.loose??0};
+let f=document.getElementById("fields");f.innerHTML="";
+if(it[2])addField("first",it[1]||"Cases");
+if(it[3])addField("loose","Loose");
+activeType=it[2]?"first":"loose";updateActive();show("counter")
+}
+function addField(t,l){let d=document.createElement("div");d.className="field";d.id="field-"+t;d.innerHTML='<div class="field-label">'+esc(l)+'</div><div class="field-value" id="value-'+t+'">'+working[t]+'</div>';d.onclick=()=>{activeType=t;updateActive()};document.getElementById("fields").appendChild(d)}
+function updateActive(){["first","loose"].forEach(t=>{let e=document.getElementById("field-"+t);if(e)e.classList.toggle("active",t===activeType)})}
+function key(k){let v=String(working[activeType]??0);if(v==="0")v="";if(v.length<4)v+=k;working[activeType]=Number(v||0);document.getElementById("value-"+activeType).textContent=working[activeType]}
+function clearValue(){working[activeType]=0;document.getElementById("value-"+activeType).textContent="0"}
+function backspace(){let v=String(working[activeType]??0);v=v.length>1?v.slice(0,-1):"0";working[activeType]=Number(v);document.getElementById("value-"+activeType).textContent=v}
+function submitValue(){
+let it=items[currentArea][currentIndex];if(!counts[currentArea])counts[currentArea]={};counts[currentArea][it[0]]={};
+if(it[2])counts[currentArea][it[0]].first=working.first;if(it[3])counts[currentArea][it[0]].loose=working.loose;save();
+if(it[2]&&it[3]&&activeType==="first"){activeType="loose";updateActive();return}
+currentIndex++;loadItem()
+}
+function buildRows(sourceAreas,sourceItems,sourceCounts,target){
+target.innerHTML="";let any=false;
+sourceAreas.forEach(a=>{let rows=[];(sourceItems[a]||[]).forEach(it=>{let c=sourceCounts[a]?.[it[0]];if(!c)return;any=true;let p=[];if(it[2])p.push((it[1]||"Cases")+": "+(c.first??0));if(it[3])p.push("Loose: "+(c.loose??0));rows.push('<div class="summary-row"><span>'+esc(it[0])+'</span><strong>'+p.join(" · ")+"</strong></div>")});if(rows.length)target.innerHTML+='<div class="summary-area">'+esc(a)+"</div>"+rows.join("")});
+if(!any)target.innerHTML='<div class="empty">Nothing has been counted yet.</div>'
+}
+function showSummary(){buildRows(areas,items,counts,document.getElementById("summaryList"));show("summary")}
+function saveAndStartNew(){if(!confirm("Save this count and start a new one?"))return;let has=Object.values(counts).some(a=>a&&Object.keys(a).length);if(has){savedCounts.unshift({date:new Date().toLocaleString([], {dateStyle:"medium",timeStyle:"short"}),areas:JSON.parse(JSON.stringify(areas)),items:JSON.parse(JSON.stringify(items)),counts:JSON.parse(JSON.stringify(counts))});if(savedCounts.length>30)savedCounts=savedCounts.slice(0,30)}counts={};save();showHome()}
+function renderSaved(){
+let b=document.getElementById("savedCountsList");b.innerHTML="";
+if(!savedCounts.length){b.innerHTML='<div class="empty">No saved counts yet.</div>';return}
+savedCounts.forEach((s,i)=>{
+let d=document.createElement("div");d.className="summary-row";
+d.innerHTML='<span>'+esc(s.date)+'</span><span style="display:flex;gap:5px"><button class="smallbtn" onclick="viewSaved('+i+')">View</button><button class="smallbtn" onclick="editSaved('+i+')">Edit</button><button class="smallbtn" onclick="deleteSaved('+i+')">Delete</button></span>';
+b.appendChild(d)
+})}
+function editSaved(i){
+ const s=savedCounts[i];
+ const box=document.getElementById("savedList");
+ document.getElementById("savedTitle").textContent="Edit Saved Count • "+s.date;
+ box.innerHTML="";
+ s.areas.forEach(a=>{
+   let rows=[];
+   (s.items[a]||[]).forEach(it=>{
+     let c=s.counts[a]?.[it[0]]; if(!c)return;
+     let firstLabel=it[1]||"Cases";
+     rows.push('<div class="summary-row"><span>'+esc(it[0])+'</span><span style="display:flex;gap:5px">'+
+       (it[2]?'<input class="saved-input" type="number" min="0" max="9999" value="'+(c.first??0)+'" data-a="'+escAttr(a)+'" data-item="'+escAttr(it[0])+'" data-type="first">':'')+
+       (it[3]?'<input class="saved-input" type="number" min="0" max="9999" value="'+(c.loose??0)+'" data-a="'+escAttr(a)+'" data-item="'+escAttr(it[0])+'" data-type="loose">':'')+
+       '</span></div>');
+   });
+   if(rows.length)box.innerHTML+='<div class="summary-area">'+esc(a)+"</div>"+rows.join("");
+ });
+ box.innerHTML+='<button class="next" onclick="saveEditedSaved('+i+')">Save Changes</button>';
+ show("savedView");
+}
+function saveEditedSaved(i){
+ const s=savedCounts[i];
+ document.querySelectorAll("#savedList .saved-input").forEach(inp=>{
+   const a=inp.dataset.a,item=inp.dataset.item,type=inp.dataset.type;
+   if(!s.counts[a])s.counts[a]={};
+   if(!s.counts[a][item])s.counts[a][item]={};
+   const n=Math.max(0,Math.min(9999,Number(inp.value)||0));
+   s.counts[a][item][type]=n;
+ });
+ savedCounts[i]=s;save();viewSaved(i);
+}
+function deleteSaved(i){
+ if(!confirm("Delete this saved count? This cannot be undone."))return;
+ savedCounts.splice(i,1);save();showHome();
+}
+function viewSaved(i){let s=savedCounts[i];document.getElementById("savedTitle").textContent="Saved Count • "+s.date;buildRows(s.areas,s.items,s.counts,document.getElementById("savedList"));show("savedView")}
+function openEditor(){renderEditor();show("editor")}
+function renderEditor(){
+let b=document.getElementById("editorBody");b.innerHTML="";
+areas.forEach(a=>{
+let h=document.createElement("h3");h.textContent=a;b.appendChild(h);
+(items[a]||[]).forEach((it,i)=>{
+let d=document.createElement("div");d.className="item-edit";
+d.innerHTML='<input type="text" value="'+escAttr(it[0])+'"><div class="checks"><select><option>Cases</option><option>Trays</option><option>Boxes</option><option>None</option></select><label><input type="checkbox" class="first" '+(it[2]?'checked':'')+'> First quantity</label><label><input type="checkbox" class="loose" '+(it[3]?'checked':'')+'> Loose</label><button class="smallbtn danger">Delete</button></div>';
+let inp=d.querySelector("input[type=text]"),sel=d.querySelector("select");
+sel.value=it[1]||"Cases";inp.onchange=()=>{it[0]=inp.value.trim()||it[0];save()};sel.onchange=()=>{it[1]=sel.value;save()};d.querySelector(".first").onchange=e=>{it[2]=e.target.checked?1:0;save()};d.querySelector(".loose").onchange=e=>{it[3]=e.target.checked?1:0;save()};
+d.querySelector(".danger").onclick=()=>{if(confirm("Delete "+it[0]+"?")){items[a].splice(i,1);save();renderEditor()}};b.appendChild(d)
+});
+let add=document.createElement("button");add.className="smallbtn";add.textContent="＋ Add Item";add.onclick=()=>{items[a].push(["New Item","Cases",1,1]);save();renderEditor()};b.appendChild(add)
+})
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m]))}
+function escAttr(s){return esc(s).replace(/"/g,"&quot;")}
+if(Array.isArray(items["Store Room"])){
+ const sr=items["Store Room"];
+ const gi=sr.findIndex(x=>x[0]==="Gherkins");
+ const ji=sr.findIndex(x=>x[0]==="Jalapeños");
+ if(gi>=0&&ji>=0&&gi>ji){const g=sr.splice(gi,1)[0];const j=sr.findIndex(x=>x[0]==="Jalapeños");sr.splice(j,0,g);}
+}
+save();renderAreas();renderSaved();if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js");
+</script>
+</body></html>
