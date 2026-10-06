@@ -76,7 +76,7 @@ if(!Array.isArray(areas)||!areas.length)areas=DEFAULT_AREAS.slice();
 if(!items||typeof items!=="object")items=JSON.parse(JSON.stringify(DEFAULT_ITEMS));
 if(!Array.isArray(savedCounts))savedCounts=[];
 
-const LIST_VERSION="user-stock-list-v1";
+const LIST_VERSION="user-stock-list-v2";
 if(localStorage.getItem("sc_list_version")!==LIST_VERSION){
   const old=counts||{}, cleaned={};
   Object.keys(DEFAULT_ITEMS).forEach(a=>{
@@ -128,8 +128,8 @@ function renderSaved(){
 let b=document.getElementById("savedCountsList");b.innerHTML="";
 if(!savedCounts.length){b.innerHTML='<div class="empty">No saved counts yet.</div>';return}
 savedCounts.forEach((s,i)=>{
-let d=document.createElement("div");d.className="summary-row";
-d.innerHTML='<span>'+esc(s.date)+'</span><span style="display:flex;gap:5px"><button class="smallbtn" onclick="viewSaved('+i+')">View</button><button class="smallbtn" onclick="editSaved('+i+')">Edit</button><button class="smallbtn" onclick="deleteSaved('+i+')">Delete</button></span>';
+let d=document.createElement("div");d.className="card";d.style.marginBottom="10px";
+d.innerHTML='<div style="font-weight:800;margin-bottom:10px">'+esc(s.date)+'</div><div class="actions"><button class="smallbtn" onclick="viewSaved('+i+')">View</button><button class="smallbtn" onclick="editSaved('+i+')">Edit</button><button class="smallbtn danger" onclick="deleteSaved('+i+')">Delete</button></div>';
 b.appendChild(d)
 })}
 function viewSaved(i){
